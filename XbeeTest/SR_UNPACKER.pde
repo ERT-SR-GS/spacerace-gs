@@ -6,6 +6,7 @@ class Unpacker {
   static final int PACKET_SIZE = 51;
   static final int DATA_SIZE = 35;
   static final int XBEE_FREQ = 9600;
+  static final int MASK = 255;
   
   // Packet Data
   private int pktID;
@@ -32,7 +33,7 @@ class Unpacker {
   
   Unpacker(PApplet applet){
     // Open COM port 
-    xbee = new Serial(applet, Serial.list()[1], XBEE_FREQ); //preferabily right [0] and plug only 1 usb into the computer. Else check device manager for port number
+    xbee = new Serial(applet,"COM10", XBEE_FREQ); //preferabily write "[0]" and plug only 1 usb into the computer. Else check device manager for port number
     
     data = new byte[PACKET_SIZE];
     parsed = new byte[DATA_SIZE];
@@ -61,11 +62,32 @@ class Unpacker {
   }
   
   public void readPacket(){
+    
     if(available()) {
+      /*
+      int i = 0;
+      while(xbee.available() > 0 && i<PACKET_SIZE){
+        data[i] = (byte)xbee.read();
+        i += 1;
+      }
+      */
       data = xbee.readBytes(PACKET_SIZE);
+      /*
+      for(int j = 0;j<PACKET_SIZE; j++){
+        print(String.format("%x ", data[j])); 
+      }
+      println();
+      */
+      xbee.clear();
       parse();
       unpack();
     }
+    /*
+    data = xbee.readBytes(PACKET_SIZE);
+    xbee.clear();
+    parse();
+    unpack();
+    */
   }
   // ---------- SETTERS ---------- //
   
@@ -125,41 +147,38 @@ class Unpacker {
   // ---------- PRIVATE ---------- //
   private void parse(){
     for(int i = 0; i<DATA_SIZE; i++){
-      parsed[i] = data[i + DATA_START_INDEX];     
+      parsed[i] = data[i + DATA_START_INDEX]; 
     }
   }
   
   private void unpack(){
-    this.teamID = parsed[0] & 0b11;
-    this.event = Event.fromInt((parsed[0] >> 2) & 0b111);
+    this.teamID = parsed[0] & 3;
+    this.event = Event.fromInt((parsed[0] >> 2) & 7);
     this.pktID = ((0 + parsed[1]) << 8) + parsed[2];
     
     temperature = parsed[3];
     battery = parsed[4];
     altitude = ((0+parsed[5]) << 8) + parsed[6];
     
-    int temp = ((0 + parsed[7] << 24) + ((0 + parsed[8]) << 16) + ((0 + parsed[9]) << 8) + parsed[10]);
-    Float.intBitsToFloat(temp);
-    
-    temp = ((0 + parsed[7] << 24) + ((0 + parsed[8]) << 16) + ((0 + parsed[9]) << 8) + parsed[10]);
+    int temp = ( (((parsed[7]) & MASK)<< 24) + (((parsed[8]) & MASK)<< 16) + (((parsed[9]) & MASK)<< 8) + (((parsed[10]) & MASK)) );
     rotA = Float.intBitsToFloat(temp);
     
-    temp = ((0 + parsed[11] << 24) + ((0 + parsed[12]) << 16) + ((0 + parsed[13]) << 8) + parsed[14]);
+    temp = ( (((parsed[11]) & MASK)<< 24) + (((parsed[12]) & MASK)<< 16) + (((parsed[13]) & MASK)<< 8) + (((parsed[14]) & MASK)) );
     rotX = Float.intBitsToFloat(temp);
     
-    temp = ((0 + parsed[15] << 24) + ((0 + parsed[16]) << 16) + ((0 + parsed[17]) << 8) + parsed[18]);
+    temp = ( (((parsed[15]) & MASK)<< 24) + (((parsed[16]) & MASK)<< 16) + (((parsed[17]) & MASK)<< 8) + (((parsed[18]) & MASK)) );
     rotY = Float.intBitsToFloat(temp);
     
-    temp = ((0 + parsed[19] << 24) + ((0 + parsed[20]) << 16) + ((0 + parsed[21]) << 8) + parsed[22]);
+    temp = ( (((parsed[19]) & MASK)<< 24) + (((parsed[20]) & MASK)<< 16) + (((parsed[21]) & MASK)<< 8) + (((parsed[22]) & MASK)) );
     rotZ = Float.intBitsToFloat(temp);
     
-    temp = ((0 + parsed[23] << 24) + ((0 + parsed[24]) << 16) + ((0 + parsed[25]) << 8) + parsed[26]);
+    temp = ( (((parsed[23]) & MASK)<< 24) + (((parsed[24]) & MASK)<< 16) + (((parsed[25]) & MASK)<< 8) + (((parsed[26]) & MASK)) );
     velX = Float.intBitsToFloat(temp);
     
-    temp = ((0 + parsed[27] << 24) + ((0 + parsed[28]) << 16) + ((0 + parsed[29]) << 8) + parsed[30]);
+    temp = ( (((parsed[27]) & MASK)<< 24) + (((parsed[28]) & MASK)<< 16) + (((parsed[29]) & MASK)<< 8) + (((parsed[30]) & MASK)) );
     velY = Float.intBitsToFloat(temp);
     
-    temp = ((0 + parsed[31] << 24) + ((0 + parsed[32]) << 16) + ((0 + parsed[33]) << 8) + parsed[34]);
+    temp = ( (((parsed[31]) & MASK)<< 24) + (((parsed[32]) & MASK)<< 16) + (((parsed[33]) & MASK)<< 8) + (((parsed[34]) & MASK)) );
     velZ = Float.intBitsToFloat(temp);
   }
 }

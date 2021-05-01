@@ -17,8 +17,10 @@ void setup(){
 
 void draw()
 {
+  
   if(unpacker.available()){
     unpacker.readPacket();
-    print(String.format("%lf %lf %lf %lf\n",unpacker.rotA(), unpacker.rotX(), unpacker.rotY(), unpacker.rotZ()));
+    print(String.format("%d %d %d %d %f %f %f %f %f %f %f\n",unpacker.teamID(), unpacker.altitude(), unpacker.temperature(), unpacker.battery(), unpacker.rotA(), unpacker.rotX(), unpacker.rotY(), unpacker.rotZ(), unpacker.velX(), unpacker.velY(), unpacker.velZ()));
+    //print(unpacker.pktID());
   }
 }
