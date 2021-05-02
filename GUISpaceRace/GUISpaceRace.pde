@@ -80,6 +80,7 @@ void draw(){
 
   //Déterminer la phase de vol en fonction d'event
   void checkEvent(int event){
+    // THEO : Si tu met comme type "Event" au lieu de "int" pour ton event, tu peux utiliser la fonction switch qui sera plus propre que des if
     if (event == 0 && !liftOff){ 
       startToLiftoff = millis();
       liftOff = true;
@@ -265,5 +266,4 @@ void drawCylinder( int sides, float r, float h)
         vertex( x2, y2, halfHeight);    
     }
     endShape(CLOSE);
-
 }
