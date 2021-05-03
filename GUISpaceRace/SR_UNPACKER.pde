@@ -18,9 +18,9 @@ class Unpacker {
   private int temperature;
   private int battery;
   
-  private float velX;
-  private float velY;
-  private float velZ;
+  private float accelX;
+  private float accelY;
+  private float accelZ;
   
   private float rotA;
   private float rotX;
@@ -48,9 +48,9 @@ class Unpacker {
     temperature = 0;
     battery = 0;
     
-    velX = 0;
-    velY = 0;
-    velZ = 0;
+    accelX = 0;
+    accelY = 0;
+    accelZ = 0;
     rotA = 0;
     rotX = 0;
     rotY = 0;
@@ -102,16 +102,16 @@ class Unpacker {
     return battery; 
   }
   
-  public float velX(){
-    return velX; 
+  public float accelX(){
+    return accelX; 
   }
 
-  public float velY(){
-    return velY; 
+  public float accelY(){
+    return accelY; 
   }
 
-  public float velZ(){
-    return velZ; 
+  public float accelZ(){
+    return accelZ; 
   }
   
   public float rotA(){
