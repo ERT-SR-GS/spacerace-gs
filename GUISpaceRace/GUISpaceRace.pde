@@ -146,9 +146,9 @@ void updateTelemetryData(){
   batteryLevel = unpack.battery();
   altitude = unpack.altitude();
   temperature = unpack.temperature();
-  orientation[0] = unpack.rotX();
-  orientation[1] = unpack.rotY();
-  orientation[2] = unpack.rotZ();
+  orientation[0] = unpack.rotX() * unpack.rotA();
+  orientation[1] = unpack.rotY() * unpack.rotA();
+  orientation[2] = unpack.rotZ() * unpack.rotA();
   acceleration[0] = unpack.velX();
   acceleration[1] = unpack.velY();
   acceleration[2] = unpack.velZ();
