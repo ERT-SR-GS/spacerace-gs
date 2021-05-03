@@ -149,9 +149,9 @@ void updateTelemetryData(){
   orientation[0] = unpack.rotX() * unpack.rotA();
   orientation[1] = unpack.rotY() * unpack.rotA();
   orientation[2] = unpack.rotZ() * unpack.rotA();
-  acceleration[0] = unpack.velX();
-  acceleration[1] = unpack.velY();
-  acceleration[2] = unpack.velZ();
+  acceleration[0] = unpack.accelX();
+  acceleration[1] = unpack.accelY();
+  acceleration[2] = unpack.accelZ();
 }
 
 //TO DELETE
