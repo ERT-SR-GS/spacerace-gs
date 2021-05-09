@@ -12,8 +12,8 @@ class StoreTheData{
   
   //All the data needed for graphs is stored here
   public HashMap<Double, Double> allAltitudes = new HashMap<Double, Double>();               //Stores all the altitudes and their times written in the files here
-  public HashMap<Double, Double[]> allOrientations = new HashMap<Double, Double[]>();        //Stores all the orientations and their times written in the files here
-  public HashMap<Double, Double[]> allAccelerations = new HashMap<Double, Double[]>();       //Stores all the accelerations and their times written in the files here
+  public HashMap<Double, Double[]> allOrientations = new HashMap<Double, Double[]>();        //Stores all the orientations and their times written in the files here, array corresponds to: {a, x, y, z}
+  public HashMap<Double, Double[]> allAccelerations = new HashMap<Double, Double[]>();       //Stores all the accelerations and their times written in the files here, array corresponds to: {x, y, z, sqrt(x^2+y^2+z^2)}
   public HashMap<Double, Double> allBatteryLevels = new HashMap<Double, Double>();           //Stores all the battery levels and their times written in the files here
   public HashMap<Double, Double> allInternalTemperatures = new HashMap<Double, Double>();    //Stores all the internal temperatures and their times written in the files here
   
@@ -51,13 +51,13 @@ class StoreTheData{
   
   //Writes the orientation vector and other variable into the orientation file and its map.
   //Argument time specifies the time at which this orientation was achieved.
-  //Arguments orientation_x, orientation_y, orientation_z specify the rocket's orientation in x, y and z coordinates respectively.
+  //Arguments orientation_x, orientation_y, orientation_z specify the rocket's orientation in a, x, y and z coordinates respectively.
   //Argument other specifies the other component you guys have for the orientation.
-  public void writeOrientation(double time, double orientation_x, double orientation_y, double orientation_z, double other){
+  public void writeOrientation(double time, double orientation_a, double orientation_x, double orientation_y, double orientation_z){
     this.orientationWriter.print("Time: " + time + "s; ");
-    this.orientationWriter.print("Orientation: (" + orientation_x + ", " + orientation_y + ", " + orientation_z + ") [orientation units?]; ");
-    this.orientationWriter.println("[other]: " + other + "[other's units];");
-    Double[] orientationArray = {orientation_x, orientation_y, orientation_z, other};
+    this.orientationWriter.print("Orientation: (" + orientation_x + ", " + orientation_y + ", " + orientation_z + "); ");
+    this.orientationWriter.println("Orientation's A variable: " + orientation_a + ";");
+    Double[] orientationArray = {orientation_a, orientation_x, orientation_y, orientation_z};
     this.allOrientations.put(time, orientationArray);
   }
   
@@ -67,8 +67,9 @@ class StoreTheData{
   public void writeAcceleration(double time, double accel_x, double accel_y, double accel_z){
     this.accelerationWriter.print("Time: " + time + "s; ");
     this.accelerationWriter.print("Velocity: (" + accel_x + ", " + accel_y + ", " + accel_z + ") [in m/s^2]; ");
-    this.accelerationWriter.println("Acceleration intensity: " + (Math.sqrt(accel_x*accel_x + accel_y*accel_y + accel_z*accel_z)) + "m/s^2;");
-    Double[] accelerationArray = {accel_x, accel_y, accel_z};
+    double accel_intensity = (Math.sqrt(accel_x*accel_x + accel_y*accel_y + accel_z*accel_z));
+    this.accelerationWriter.println("Acceleration intensity: " + accel_intensity + "m/s^2;");
+    Double[] accelerationArray = {accel_x, accel_y, accel_z, accel_intensity};
     this.allAccelerations.put(time, accelerationArray);
   }
   
