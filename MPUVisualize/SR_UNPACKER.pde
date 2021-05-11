@@ -1,11 +1,12 @@
 import processing.serial.*;
 
+//test push
 class Unpacker {
  
   static final int DATA_START_INDEX = 15;
   static final int PACKET_SIZE = 51;
   static final int DATA_SIZE = 35;
-  static final int XBEE_FREQ = 9600;
+  static final int XBEE_FREQ = 115200;
   static final int MASK = 255;
   
   // Packet Data
@@ -33,7 +34,7 @@ class Unpacker {
   
   Unpacker(PApplet applet){
     // Open COM port 
-    xbee = new Serial(applet,"COM10", XBEE_FREQ); //preferabily write "[0]" and plug only 1 usb into the computer. Else check device manager for port number
+    xbee = new Serial(applet,"COM9", XBEE_FREQ); //preferabily write "[0]" and plug only 1 usb into the computer. Else check device manager for port number
     
     data = new byte[PACKET_SIZE];
     parsed = new byte[DATA_SIZE];
