@@ -1,6 +1,9 @@
 import processing.serial.*;
 import java.awt.*;
 import java.util.*;
+import peasy.*;
+
+PShape rocketModel;
 
 Serial port;
 String val;
@@ -29,6 +32,13 @@ HashMap<Double, Double> allInternalTemperatures = new HashMap<Double, Double>();
 
 void setup(){
   size(1900, 900, P3D);
+  
+  // Load rocket model
+  rocketModel = loadShape("rocket.obj");
+  PImage img = loadImage("rocket.jpg");
+  rocketModel.setTexture(img);
+  rocketModel.scale(0.2);
+  
   background(112,128,144);
   surface.setTitle("Ground Station Monitor");  
   initializeTestValues();
@@ -87,20 +97,26 @@ void draw(){
    }
   
   void drawRocket(){
-    translate(width/2,height/2+50);
+    translate(width/2,height/2+100);
+    
     stroke(255);
     fill(220,20,60);
-    rotate(unpack.rotA(), unpack.rotX(), unpack.rotY(), unpack.rotZ()); 
+    rotate(unpack.rotA(), unpack.rotX(), unpack.rotY(), unpack.rotZ());
     //En angles d'Euler:
     //rotateX(unpack.rotA()*unpack.rotX());
     //rotateY(unpack.rotA()*unpack.rotY());
     //rotateZ(unpack.rotA()*unpack.rotZ());
+    //The rocket model is drawn horizontally 
+    shape(rocketModel, 0, 0);
+    /*
     strokeWeight(1);
     drawCylinder( 9,  40, 200 );
+    
     pushMatrix();
     translate(0,0,150);
     drawCone( 8, 40, 5, 100 );
-    popMatrix();
+     */
+    //popMatrix();
   }
 
   //Déterminer la phase de vol en fonction d'event

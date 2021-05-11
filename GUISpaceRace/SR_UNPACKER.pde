@@ -5,7 +5,7 @@ class Unpacker {
   static final int DATA_START_INDEX = 15;
   static final int PACKET_SIZE = 51;
   static final int DATA_SIZE = 35;
-  static final int XBEE_FREQ = 9600;
+  static final int XBEE_FREQ = 115200;
   static final int MASK = 255;
   
   // Packet Data
@@ -186,10 +186,10 @@ enum Event{
    return name;
  }
  
-static public Event fromInt(int val){
-  if((val < 0) && (val > Event.values().length)) 
-    return Event.NO_EVENT;
-  else
-    return Event.values()[val]; 
+ static public Event fromInt(int val){
+   if((val >= 0) && (val <= Event.values().length))
+     return Event.values()[val]; 
+   else 
+     return Event.NO_EVENT;
  }
 }
