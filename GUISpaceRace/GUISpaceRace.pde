@@ -48,9 +48,9 @@ void draw(){
      stroke(0,0,0);
      strokeWeight(4);
      //graphs pas encore au point
-     drawTempGraph();
-     drawAltGraph();
-     drawAccelGraph();
+     //drawTempGraph();
+     //drawAltGraph();
+     //drawAccelGraph();
      translate(0,0,100);
      pushMatrix();
      drawRocket();

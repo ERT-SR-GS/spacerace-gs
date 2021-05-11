@@ -159,13 +159,13 @@ class Unpacker {
     rotZ = Float.intBitsToFloat(temp);
     
     temp = ( (((parsed[23]) & MASK)<< 24) + (((parsed[24]) & MASK)<< 16) + (((parsed[25]) & MASK)<< 8) + (((parsed[26]) & MASK)) );
-    velX = Float.intBitsToFloat(temp);
+    accelX = Float.intBitsToFloat(temp);
     
     temp = ( (((parsed[27]) & MASK)<< 24) + (((parsed[28]) & MASK)<< 16) + (((parsed[29]) & MASK)<< 8) + (((parsed[30]) & MASK)) );
-    velY = Float.intBitsToFloat(temp);
+    accelY = Float.intBitsToFloat(temp);
     
     temp = ( (((parsed[31]) & MASK)<< 24) + (((parsed[32]) & MASK)<< 16) + (((parsed[33]) & MASK)<< 8) + (((parsed[34]) & MASK)) );
-    velZ = Float.intBitsToFloat(temp);
+    accelZ = Float.intBitsToFloat(temp);
   }
 }
 
@@ -186,7 +186,10 @@ enum Event{
    return name;
  }
  
- static public Event fromInt(int val){
-   return Event.values()[val]; 
+static public Event fromInt(int val){
+  if((val < 0) && (val > Event.values().length)) 
+    return Event.NO_EVENT;
+  else
+    return Event.values()[val]; 
  }
 }
