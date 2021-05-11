@@ -33,7 +33,7 @@ class Unpacker {
   
   Unpacker(PApplet applet){
     // Open COM port 
-    xbee = new Serial(applet,"COM10", XBEE_FREQ); //preferabily write "[0]" and plug only 1 usb into the computer. Else check device manager for port number
+    xbee = new Serial(applet,"COM9", XBEE_FREQ); //preferabily write "[0]" and plug only 1 usb into the computer. Else check device manager for port number
     
     data = new byte[PACKET_SIZE];
     parsed = new byte[DATA_SIZE];
