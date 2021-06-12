@@ -7,7 +7,7 @@ String val;
 float[] angles;
 
 // Scaling for the rocket model
-float ROCKET_SCALE = 40; //0.2;
+float ROCKET_SCALE = 0.2; //0.2;
 // PShape model of the rocket
 PShape rocketModel;
 
@@ -15,12 +15,8 @@ PImage SR_logo;
 PImage team_logo;
 String team_name = "VOSTOK";
 
-//Declaring data variables
-float batteryLevel; //Battery level (0-100%)
-float altitude; //Altitude (0-2048 meters)
-float temperature; //Temperature (-64/64 C)
-float[] orientation = new float [3] ; //Orientation (3D: 3*16 bit for x,y,z axis)
-float[] acceleration = new float[3]; //Acceleration (3D: 3*16 bit for x,y,z axis 0-300)
+float rotX, rotY, rotZ;
+float[] orientation = new float [4] ; //Orientation (3D: 3*16 bit for x,y,z axis)
 int startToLiftoff;
 boolean liftOff; String timeOfLiftOff; String timeSinceLiftOff;
 boolean apogee; String timeOfApogee;
@@ -41,8 +37,10 @@ Graph graphAlt;
 Graph graphTemp;
 Graph graphAccel;
 
+Unpacker unpacker;
+
 // Intervals for the graphs
-Interval altInterval = new Interval(0, 1000); // should never be rescaled
+Interval altInterval = new Interval(0, 100); // should never be rescaled
 Interval tempInterval = new Interval(-50, 50); // should never be rescaled
 Interval accelInterval = new Interval(-100, 100); // should never be rescaled
 Interval initTimeInterval = new Interval(0, 20); // Will be rescale as time goes by
@@ -61,12 +59,11 @@ void setup(){
   size(1900, 900, P3D);
   surface.setTitle("Ground Station Monitor");
   
-  // Only for testing
-  initializeTestValues();
-  
   // Load rocket model
-  rocketModel = loadShape("skins/minecraft-steve.obj");
-  PImage img = loadImage("skins/Steve.png");
+  rocketModel = loadShape("skins/rocket.obj");
+  rocketModel.scale(ROCKET_SCALE);
+  
+  PImage img = loadImage("skins/rocket.jpg");
   rocketModel.setTexture(img);
   
   SR_logo = loadImage("logo/logo.png");
@@ -122,7 +119,7 @@ void setup(){
     @Override 
     public void run(){
       if(millis() > 0)
-        graphAlt.addPoint(new Point(millis() / 1000.0, altitude));
+        graphAlt.addPoint(new Point(millis() / 1000.0, unpacker.altitude()));
       graphAlt.drawGraph();
     }
   });
@@ -152,7 +149,7 @@ void setup(){
     @Override
     public void run(){
       if(millis() > 0)
-        graphAccel.addPoint(new Point(millis() / 1000.0, altitude));
+        graphAccel.addPoint(new Point(millis() / 1000.0, unpacker.accelX()));
       graphAccel.drawGraph();
     }
   });
@@ -172,7 +169,7 @@ void setup(){
     @Override
     public void run(){
       if(millis() > 0)
-        graphTemp.addPoint(new Point(millis() / 1000.0, altitude));
+        graphTemp.addPoint(new Point(millis() / 1000.0, unpacker.temperature()));
       graphTemp.drawGraph();
     }
   });
@@ -197,29 +194,38 @@ void setup(){
   
   pane = new Pane(telemWidth + box_padding + eventWidth, 800, new Point(width/2, height/2), false);
   pane.addChilds(telemetry_box, event_box, alt_box, temp_box, visu_box, accel_box, team_box);
+
+  unpacker = new Unpacker(this);
 }
 
 int ind = 0;
 void draw(){
-  background(0);
+  if(unpacker.available()){
+    translate(0,0,-50);
+    background(0);
+    unpacker.readPacket();
+    //getOrientation();
+    pane.draw();
+  }
+  /*
   pane.draw();
   ind += 1;
   ind = ind % Event.values().length;
   event = Event.values()[ind];
+  */
 }
    
    
   void drawRocket(){
-    // Should be :rotate(unpack.rotA(), unpack.rotX(), unpack.rotY(), unpack.rotZ());
-    rocketModel.resetMatrix();
-    rocketModel.scale(ROCKET_SCALE);
-    rocketModel.rotateX(PI);     
-    rocketModel.rotateY(-PI/2);
-    shape(rocketModel, visu_box.width()/2, visu_box.height()/2 + 100);
+    translate(visu_box.width()/2, visu_box.height()/2, 150);
+    
+    rotate(unpacker.rotA(), -unpacker.rotX(), unpacker.rotY(), unpacker.rotZ());
+    shape(rocketModel);
   }
 
-
 void checkEvent(){
+  if(event == null)
+    return;
   switch(event){
     case LIFTOFF:
       if(!liftOff){
@@ -289,9 +295,9 @@ void drawTelemetryContent(){
   text ("Time since lift-off: ", 400, 140); 
   
   textAlign(LEFT, CENTER);
-  text(temperature + " °C", 420, 20);
-  text(altitude + " m", 420, 60);
-  text(batteryLevel + " %", 420, 100);
+  text(unpacker.temperature() + " °C", 420, 20);
+  text(unpacker.altitude() + " m", 420, 60);
+  text(unpacker.battery() + " %", 420, 100);
   text(timeSinceLiftOff, 420, 140);
   
   textAlign(RIGHT, CENTER);  
@@ -300,10 +306,14 @@ void drawTelemetryContent(){
   text ("y-axis:", 800, 100); 
   text ("z-axis:", 800, 140);
   
+  rotX = (orientation[0] * - orientation[1]) * RAD_TO_DEG;
+  rotY = (orientation[0] * orientation[2]) * RAD_TO_DEG;
+  rotZ = (orientation[0] * orientation[3]) * RAD_TO_DEG;
+  
   textAlign(LEFT, CENTER);
-  text(orientation[0], 820, 60);
-  text(orientation[1], 820, 100);
-  text(orientation[2], 820, 140);
+  text(rotX, 820, 60);
+  text(rotY, 820, 100);
+  text(rotZ, 820, 140);
   
   textAlign(RIGHT, CENTER);  
   text ("Acceleration:", 1200, 20);
@@ -312,9 +322,9 @@ void drawTelemetryContent(){
   text ("z-axis:", 1200, 140); 
   
   textAlign(LEFT, CENTER);
-  text(acceleration[0], 1220, 60);
-  text(acceleration[1], 1220, 100);
-  text(acceleration[2], 1220, 140);
+  text(unpacker.accelX, 1220, 60);
+  text(unpacker.accelY, 1220, 100);
+  text(unpacker.accelZ, 1220, 140);
 }
   
 String fromMillisToReadableTime(int timeInMillis) {
@@ -325,19 +335,10 @@ String fromMillisToReadableTime(int timeInMillis) {
     return time;
 }
 
-//TO DELETE
-void initializeTestValues(){
-  event = Event.LIFTOFF;
-  batteryLevel = 100;
-  altitude = 0;
-  temperature = -64;
-  orientation[0] = 0; orientation[1] = 0; orientation [2] = 0;
-  acceleration[0] = 0; acceleration[1] = 0; acceleration [2] = 0;
- // event = Event.NO_EVENT;
-  allAltitudes.put((double)0,(double)0);             //Stores all the altitudes and their times written in the files here
-  Double[] orientations = {(double)0, (double)0, (double)0};
-  allOrientations.put((double) 0, orientations);       //Stores all the orientations and their times written in the files here, array corresponds to: {a, x, y, z}
-  allAccelerations.put((double) 0, orientations);      //Stores all the accelerations and their times written in the files here, array corresponds to: {x, y, z, sqrt(x^2+y^2+z^2)}
-  allBatteryLevels.put((double) 0, (double) 0);          //Stores all the battery levels and their times written in the files here
-  allInternalTemperatures.put((double) 0, (double) 0);    //Stores all the internal temperatures and their times written in the files here
+void logOrientation(){
+  orientation[0] = unpacker.rotA();
+  orientation[1] = unpacker.rotX();
+  orientation[2] = unpacker.rotY();
+  orientation[3] = unpacker.rotZ();
+  return;
 }

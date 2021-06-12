@@ -29,9 +29,15 @@ HashMap<Double, Double[]> allAccelerations = new HashMap<Double, Double[]>();   
 HashMap<Double, Double> allBatteryLevels = new HashMap<Double, Double>();           //Stores all the battery levels and their times written in the files here
 HashMap<Double, Double> allInternalTemperatures = new HashMap<Double, Double>();    //Stores all the internal temperatures and their times written in the files here
   
+Graph altGraph;
 
 void setup(){
   size(1900, 900, P3D);
+  
+  Interval altInterval = new Interval(0,1000);
+  Interval timeInterval = new Interval(0,50);
+  altGraph = new Graph(200, 100, timeInterval, altInterval, Direction.RIGHT, Direction.UP);
+  
   
   // Load rocket model
   rocketModel = loadShape("rocket.obj");
@@ -43,9 +49,15 @@ void setup(){
   surface.setTitle("Ground Station Monitor");  
   initializeTestValues();
   unpack = new Unpacker (this);
+  
+  pushMatrix();
+  translate(400, 600, 0);
+  altGraph.drawGraph();
+  popMatrix();
 }
 
 void draw(){
+  altGraph.drawGraph();
    if(unpack.available()){
      unpack.readPacket();
      translate(0,0,-100);  
@@ -101,22 +113,22 @@ void draw(){
     
     stroke(255);
     fill(220,20,60);
-    rotate(unpack.rotA(), unpack.rotX(), unpack.rotY(), unpack.rotZ());
+    rotate(unpack.rotA(), -unpack.rotX(), unpack.rotZ(), unpack.rotY());
     //En angles d'Euler:
     //rotateX(unpack.rotA()*unpack.rotX());
     //rotateY(unpack.rotA()*unpack.rotY());
     //rotateZ(unpack.rotA()*unpack.rotZ());
     //The rocket model is drawn horizontally 
     shape(rocketModel, 0, 0);
-    /*
+    
     strokeWeight(1);
-    drawCylinder( 9,  40, 200 );
+    //drawCylinder( 9,  40, 200 );
     
     pushMatrix();
     translate(0,0,150);
-    drawCone( 8, 40, 5, 100 );
-     */
-    //popMatrix();
+    //drawCone( 8, 40, 5, 100 );
+    
+    popMatrix();
   }
 
   //Déterminer la phase de vol en fonction d'event
@@ -212,7 +224,7 @@ void initializeTestValues(){
 }
   
 void drawEnvironment(){
-   //Preparing visualization
+ //Preparing visualization
  fill(176,196,222);
  rect(10, 10, width*0.7, height*0.2, 7);  //Telemetry Rectangle
  rect(width*0.7 + 20, 10, width*0.25+60, height*0.2, 7); //Event Display Rectangle
@@ -245,6 +257,13 @@ void drawEnvironment(){
 }
 
   
+
+
+/*
+// ------------------------------
+// ----------  UNUSED  ----------
+// ------------------------------
+
 //Source for Cylinder and Cone methods: https://vormplus.be/full-articles/drawing-a-cylinder-with-processing
 void drawCylinder( int sides, float r, float h)
 {
@@ -280,6 +299,7 @@ void drawCylinder( int sides, float r, float h)
     endShape(CLOSE);
 
 }
+  
   void drawCone( int sides, float r1, float r2, float h)
 {
     float angle = 360 / sides;
@@ -315,3 +335,4 @@ void drawCylinder( int sides, float r, float h)
     }
     endShape(CLOSE);
 }
+*/

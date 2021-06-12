@@ -187,9 +187,6 @@ enum Event{
  }
  
  static public Event fromInt(int val){
-   if((val >= 0) && (val <= Event.values().length))
-     return Event.values()[val]; 
-   else 
-     return Event.NO_EVENT;
+   return NO_EVENT;  // Event.values()[val]; 
  }
 }

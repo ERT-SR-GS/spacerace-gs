@@ -25,8 +25,9 @@ void setup(){
 
 void draw(){
   translate(width/2, height/2);
-  lights();
+  //lights();
   if(unpacker.available()){
+    print("WOWOW");
     unpacker.readPacket();
     background(0);
     angles[0] = unpacker.rotA();
@@ -39,13 +40,16 @@ void draw(){
 }
 
 void drawRocket(float w, float x, float y, float z){
-  //translate(MPU_W_OFFSET, MPU_H_OFFSET, MPU_H_OFFSET); 
+  //translate(MPU_W_OFFSET, MPU_H_OFFSET, MPU_H_OFFSET);
+  println(w+ " " + x + " "+ y + " " + z);
+  pushMatrix();
   rotate(w, x, y, z);
   //translate(-MPU_W_OFFSET, -MPU_H_OFFSET, -MPU_H_OFFSET); 
   noFill();
   stroke(255);
   box(AV_WIDTH*BOX_SCALE, AV_HEIGHT*BOX_SCALE, AV_LENGTH*BOX_SCALE);
   //translate(MPU_W_OFFSET, MPU_H_OFFSET, MPU_H_OFFSET); 
-  rotate(-w, x, y, z);
+  popMatrix();
+  //rotate(-w, x, y, z);
   //translate(-MPU_W_OFFSET, -MPU_H_OFFSET, -MPU_H_OFFSET);
 }
